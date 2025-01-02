@@ -1,0 +1,21 @@
+{% extends "extras/base.html" %}
+
+{% block content %}
+<title>Edit Profile</title>
+
+
+<h1>Edit Profile</h1>
+<p>Enter your Profile details below to update: {{request.user.username}}</p>
+<p class="container d-flex justify-content-end" >
+    <a href="{% url 'dashboard' %}" style="text-decoration:none;">Back to Dashboard</a>
+</p>
+<div class="container" style="width: 40%; margin: 0 auto;">
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{u_form.as_p}}
+    {{p_form.as_p}}<br>
+    <button type="submit" class="btn btn-success btn-lg btn-block" style="width:100%;">Update Profile</button>
+</form>
+</div>
+{% endblock content %}
+

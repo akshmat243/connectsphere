@@ -1,0 +1,35 @@
+{% extends "extras/base.html" %}
+{% load static %}
+
+{% block content %}
+<title>Profile</title>
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+
+<div class="info">
+<div class="profile-container">
+    <div class="profile-header">
+        {% if user.profile_picture %}
+            <img src="{{  request.user.profile.profile_picture.url }}" alt="Profile Picture" class="profile-picture">
+        {% else %}
+            <img src="{% static 'pic.png' %}" alt="Default Profile Pictur" class="profile-picture">
+        {% endif %}
+
+        <h1 class="name">{{ request.user.first_name }} {{ request.user.last_name }}</h1>
+        <p class="email">{{ request.user.email }}</p>
+        <p class="email">{{ request.user.profile.dob }}</p>
+    </div>
+    <div class="profile-details">
+        <h2>About Me</h2>
+        <p class="bio">{{ request.user.profile.bio }}</p>
+    </div>
+    <div class="profile-footer">
+        <button class="edit-button" onclick="location.href='{% url 'editprofile' %}'">Edit Profile</button>
+    </div>
+</div>
+</div>
+
+<p class="container d-flex justify-content-center" style="height:1vh;">
+    <a href="{% url 'dashboard' %}" style="text-decoration:none;">Back to Dashboard</a>
+</p>
+
+{% endblock %}

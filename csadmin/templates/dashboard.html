@@ -1,0 +1,253 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>ConnectSphere</title>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+        <script src="https://kit.fontawesome.com/b22e43b89d.js" crossorigin="anonymous"></script>
+        <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+        }
+        header {
+            background-color: #4267B2;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+        }
+        nav {
+            display: flex;
+            justify-content: space-around;
+            background-color: #ffffff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            padding-bottom: 0;
+            margin: 5px;
+            position: sticky;
+            top: 0;
+            
+        }
+        nav a {
+            text-decoration: none;
+            color: #4267B2;
+            font-weight: bold;
+        }
+        nav a:hover {
+            color: #29487d;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 10px;
+        }
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .card img {
+            width: 800px;
+            height: 400px;
+        }
+        .card-content {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .card-title {
+            font-size: 1.5rem;
+            margin: 0 0 10px;
+        }
+        .card-text {
+            font-size: 1rem;
+            color: #555;
+        }
+        footer {
+            background-color: #4267B2;
+            color: white;
+            text-align: center;
+            padding: 10px 20px;
+            margin-top: 20px;
+        }
+        .homelogo {
+            width: auto;
+        }
+        .homelogo img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #4CAF50;
+            margin: -11px;
+        }
+        .profile {
+            width: 100%;
+            height: 60px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .profile img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #4CAF50;
+            margin: 15px;
+        }
+        .profile-name {
+            font-size: 1.2rem;
+            margin-top: 20px;
+        }
+        .delete-post {
+            display: block;
+            border: 1px solid black;
+            border-radius: 50%;
+            padding: 5px;
+            margin-right: 20px;
+        }
+        </style>
+</head>
+<body>
+    <header>
+        <h1>Welcome to ConnectSphere Social Media</h1>
+    </header>
+    <nav>
+        <div class="homelogo" style="height: 30px;"><a href="{% url 'dashboard' %}">
+            {% if user.profile.profile_picture %}
+                <img src="{{  request.user.profile.profile_picture.url }}" alt="Profile Picture">
+            {% else %}
+                <img src="{% static 'pic.png' %}" alt="Default Profile Pictur">
+            {% endif %}
+        </a></div>
+        <a href="{% url 'profile' request.user.username %}">Profile</a>
+        <a href="#">Messages</a>
+        <a href="{% url 'post' %}">Post</a>
+        <a href="{% url 'settings' %}">Settings</a>      
+    </nav>
+    {% if user.is_authenticated %}
+        <p>Welcome {{ user.username }}  !!!</p>       
+    {% endif %}
+{% for post in post %}
+    <div class="container">
+        <div class="card">
+            <div class="profile">
+                <div style="display: flex;">
+                        {% if user.profile.id == post.user.id %}
+                            {% if user.profile.profile_picture %}
+                                <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" class="profile-picture">
+                            {% else %}
+                                <img src="{% static 'pic.png' %}" alt="Default Profile Pictur" class="profile-picture">
+                            {% endif %}
+                            <p class="profile-name">{{ request.user.username }}</p>
+                            
+                        {% else %}
+                            {% if post.user.profile.profile_picture %}
+                                <img src="{{ post.user.profile.profile_picture.url }}" alt="Profile Picture1" class="profile-picture">
+                            {% else %}
+                                <img src="{% static 'pic.png' %}" alt="Default Profile Pictur" class="profile-picture">
+                            {% endif %}
+                            <p class="profile-name">{{ post.user.username }}</p>
+                        {% endif %}
+                </div>
+                <div style="display: flex;">
+                    {% if post.user.id == user.id %}
+                        <p class="delete-post"><a href="{% url 'edit_post' post.pk %}" style="color: blue;text-decoration:none;"><i class="fa-solid fa-pen-to-square"></i></a></p>
+                        <p class="delete-post"><a href="{% url 'delete_post' post.pk %}" style="color: red;text-decoration:none;">X</a></p>
+                    {% endif %}
+                </div>
+            </div>
+            <div style="display: flex;">
+                <img src="{{ post.image.url }}" alt="Post Image">
+                <div style="border: 1px solid #555;width:30%;margin-left:20px;border-radius:2%;">
+                    {% if not post.comments.all %}
+                        <p style="color: darkgray;text-align:center;">No comments yet...</p>
+                    {% else %}
+                        {% for comment in post.comments.all %}
+                    <div class="profile" style="margin: 15px;height:40px;width:90%;">
+                        {% if comment.user.id == user.profile.id %}
+                            {% if user.profile.profile_picture %}
+                                <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" class="profile-picture" style="margin: 0;">
+                            {% else %}
+                                <img src="{% static 'pic.png' %}" alt="Default Profile Pictur" class="profile-picture" style="margin: 0;">
+                            {% endif %}                            
+                        {% else %}
+                            {% if comment.user.profile.profile_picture %}
+                                <img src="{{ comment.user.profile.profile_picture.url }}" alt="Profile Picture1" class="profile-picture" style="margin: 0;">
+                            {% else %}
+                                <img src="{% static 'pic.png' %}" alt="Default Profile Pictur" class="profile-picture" style="margin: 0;height:20px;width:20px;">
+                            {% endif %}
+                        {% endif %}
+                        <p style="color: #555;margin:0;"><strong style="color: #000;">{{ comment.user.username }}:</strong><br>{{ comment.comment }}<small style="float: right;font-size:10px;">{{ comment.comment_date }}</small></p>
+                    </div><hr style="align-self: center;width:90%;">
+                        {% endfor %}
+                    {% endif %}
+                    <form action="{% url 'comment' %}" method="post">
+                        {% csrf_token %}
+                        {{form.as_p}}
+                    </form>
+                </div>
+            </div>
+            <div class="card-content">
+                <div style="width: 25%;">
+                    <h2 class="card-title">{{ post.posttitle }}</h2>
+                    <p class="card-text">{{ post.description }}</p>
+                </div>
+                <div>
+                    <form action="{% url 'likes' post.id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" name="post_id" value="{{ post.id }}">
+                            {% if user in post.likes.all %}
+                            <i class="fa-solid fa-heart fa-2xl" style="color: #ec1a13;"></i>
+                            {% else %}
+                            <i class="fa-solid fa-heart fa-2xl"></i>
+                            {% endif %}
+                        </button>
+                        <p>{{ post.likes_count }} likes</p>
+                    </form>
+                </div>
+                <div>
+                    <p style="text-align:right;color:#555;margin-top:40px;">{{ post.post_date }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+    <footer>
+        <p>&copy; 2024 ConnectSphere Platform. All Rights Reserved.</p>
+    </footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.like-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const postId = this.getAttribute('id');
+                fetch(`/like/${postId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.liked) {
+                        this.textContent = 'Unlike';
+                    } else {
+                        this.textContent = 'Like';
+                    }
+                    this.closest('.post').querySelector('p').textContent = `${data.total_likes} likes`;
+                });
+            });
+        });
+    });
+    </script>
+</body>
+</html>
