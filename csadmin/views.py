@@ -40,7 +40,8 @@ def login_view(request):
 @login_required(login_url='login')
 def dashboard_view(request):
     post = Post.objects.all()
-    return render(request, 'dashboard.html', {'post': post})
+    form = CommentForm()
+    return render(request, 'dashboard.html', {'post': post,'form':form})
 
 @login_required
 def profile_view(request, username):
@@ -59,6 +60,7 @@ def post_view(request):
         form = PostForm()        
     return render(request, 'posts.html', {'form': form})
 
+@login_required
 def likes_view(request,post_id):
     post = get_object_or_404(Post, id=post_id)
     if post.likes.filter(id=request.user.id).exists():
@@ -67,22 +69,17 @@ def likes_view(request,post_id):
         post.likes.add(request.user)
     return redirect('dashboard')
 
-def comment_view(request):
+@login_required
+def comment_view(request,post_id):
     if request.method == 'POST':
         form = CommentForm(request.POST)
         if form.is_valid():
             comment = form.save(commit=False)
             comment.user = request.user
-            comment.post = Post.objects.get(id=request.POST.get('post_id'))
+            comment.post = Post.objects.get(id=post_id)
             comment.save()
             return redirect('dashboard')
-    else:
-        form = CommentForm()
-    return render(request, 'dasboard.html', {'form': form})
-        
-            
 
-        
 
 @login_required
 def delete_post_view(request, pk):

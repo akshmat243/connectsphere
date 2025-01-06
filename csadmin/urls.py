@@ -16,7 +16,7 @@ urlpatterns = [
     path('delete_post/<int:pk>', delete_post_view, name='delete_post'),
     path('edit_post/<int:pk>', edit_post_view, name='edit_post'),
     path('likes/<int:post_id>', likes_view, name='likes'),
-    path('comment/', comment_view, name='comment'),
+    path('comment/<int:post_id>', comment_view, name='comment'),
     
     
     
